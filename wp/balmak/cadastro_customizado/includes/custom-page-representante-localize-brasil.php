@@ -1,4 +1,6 @@
 <?php
+header('Content-Type: text/html; charset=utf-8');
+
 // classe pra gerenciar a tabela
 class nix_representante_br{
 	public static $nome_tabela = 'tb_nix_representante_br';
@@ -127,14 +129,14 @@ class nix_representante_br{
 		$html .= "    </tr>";
 
 		$html .= "    <tr>";
-		$html .= "      <th><label for='rb_contato'>Área de Atuação 1</label></th>";
+		$html .= "      <th><label for='rb_contato'>&Aacute;rea de Atua&ccedil;&atilde;o Descri&ccedil;&atilde;o</label></th>";
 		$html .= "      <td><textarea style='width: 68%;' name='rb_area_de_atuacao' id='rb_area_de_atuacao'>$rb_area_de_atuacao</textarea></td>";
 		$html .= "    </tr>";
 
 
 
 		$arr_rb_area_atua = array('Food-Service', 'Balanceiros', 'Varejo', 'Automação Comercial', 'Indústria', 'Atacado', 'Farma', 'Médico-Hospitalar', 'Fitness', 'Bem Estar', 'Pet/Veterinário');
-		// $arr_rb_area_atua = array('Médico-Hospitalar', 'Food-Service', 'Atacadista / Loja Virtual');
+		$arr_rb_area_atua = array_map("utf8_decode", $arr_rb_area_atua);
 		$html_rb_area_atua = "<select name='rb_area_atua' id='rb_area_atua'>";
 		$html_rb_area_atua .= "  <option value=''>--Escolha</option>";
 		foreach($arr_rb_area_atua as $key => $value){
@@ -144,14 +146,15 @@ class nix_representante_br{
 		$html_rb_area_atua .= "</select>";
 
 		$html .= "    <tr>";
-		$html .= "      <th><label for='rb_area_atua'>Área de Atuação 2</label></th>";
+		$html .= "      <th><label for='rb_area_atua'>&Aacute;rea de Atua&ccedil;&atilde;o 2</label></th>";
 		$html .= "      <td>
 											$html_rb_area_atua
 										</td>";
 		$html .= "    </tr>";
 
 		$arr_rb_estado = array('Acre', 'Alagoas', 'Amapá', 'Amazonas', 'Bahia', 'Ceará', 'Distrito Federal', 'Espírito Santo', 'Goiás', 'Maranhão', 'Mato Grosso', 'Mato Grosso do Sul', 'Minas Gerais', 'Pará', 'Paraíba', 'Paraná', 'Pernambuco', 'Piauí', 'Rio de Janeiro', 'Rio Grande do Norte', 'Rio Grande do Sul', 'Rondônia', 'Roraima', 'Santa Catarina', 'São Paulo', 'Sergipe', 'Tocantins');
-		$html_rb_estado = "<select name='rb_estado' id='rb_estado'>";
+		$arr_rb_estado = array_map("utf8_decode", $arr_rb_estado);
+                $html_rb_estado = "<select name='rb_estado' id='rb_estado'>";
 		$html_rb_estado .= "  <option value=''>--Escolha</option>";
 		foreach($arr_rb_estado as $key => $value){
 			$sel = ($value == $rb_estado) ? " selected ": "";
@@ -217,7 +220,7 @@ class nix_representante_br{
 			$alertas .= "- Contato\n";
 		}
 		if( strlen($arr_dados["rb_area_atua"]) < 3 ){
-			$alertas .= "- Área Atuação\n";
+			$alertas .= "- &Aacute;rea Atua&ccedil;&atilde;o\n";
 		}
 		if( strlen($arr_dados["rb_estado"]) < 3 ){
 			$alertas .= "- Estado\n";
@@ -232,7 +235,7 @@ class nix_representante_br{
 
 		// ok, grava
 		$v_nome_tabela = nix_representante_br::$nome_tabela;
-
+                $arr_dados = array_map("utf8_decode", $arr_dados);
 		if(is_numeric($arr_dados["id"])){
 			$sql = "UPDATE $v_nome_tabela SET rb_nome = '".mysql_real_escape_string($arr_dados["rb_nome"])."',
 																				rb_telefone1 = '".mysql_real_escape_string($arr_dados["rb_telefone1"])."',
@@ -258,7 +261,7 @@ class nix_representante_br{
 		}
 		else{
 			$resp["objeto"] = "#" . nix_representante_br::$nome_id_dv;
-			$resp["conteudo"] = nix_representante_br::pegaHtmlTable($arr_dados["atrib_pagina"]);
+			$resp["conteudo"] = nix_representante_br::pegaHtmlTable($arr_dados["atrib_pagina"], false, true);
 
 			return $resp;
 			exit;
@@ -298,7 +301,7 @@ class nix_representante_br{
 		}
 	}
 
-	public static function pegaHtmlTable($atrib_pagina, $decode=false){
+	public static function pegaHtmlTable($atrib_pagina, $decode=false, $encode=false){
 		$nome_tabela = nix_representante_br::$nome_tabela;
 
 		$html = "<div id='dv_$nome_tabela'>";
@@ -327,7 +330,7 @@ class nix_representante_br{
 											<th align='left'>Nome</th>
 											<th align='left'>Telefone</th>
 											<th align='left'>Contato</th>
-											<th align='left'>Area Atuação</th>
+											<th align='left'>&Aacute;rea Atua&ccedil;&atilde;o</th>
 											<th align='left'>Estado</th>
 											<th>&nbsp;</th>
 										</tr>
@@ -338,7 +341,7 @@ class nix_representante_br{
 											<th align='left'>Nome</th>
 											<th align='left'>Telefone</th>
 											<th align='left'>Contato</th>
-											<th align='left'>Area Atuação</th>
+											<th align='left'>&Aacute;rea Atua&ccedil;&atilde;o</th>
 											<th align='left'>Estado</th>
 											<th>&nbsp;</th>
 										</tr>
@@ -392,6 +395,8 @@ class nix_representante_br{
 
 		if($decode){
 			$html = utf8_decode($html);
+		} else if ($encode){
+			$html = utf8_encode($html);
 		}
 
 		return $html;
@@ -408,7 +413,7 @@ if( isset($acao) && ($acao == "novo" || $acao == "alterar") ){
 	// =========
 
 	$V_ID = (isset($id) && is_numeric($id)) ? $id: "";
-	$resp["conteudo"] = nix_representante_br::pegaHtmlCadastro($V_ID);
+	$resp["conteudo"] = utf8_encode(nix_representante_br::pegaHtmlCadastro($V_ID));
 	$resp["objeto"] = "#" . nix_representante_br::$nome_id_dv;
 	echo json_encode($resp);
 }
@@ -449,7 +454,7 @@ else if( isset($acao) && $acao == "deletar" ){
 }
 else{
 	nix_representante_br::checaCreateTable();
-	$_HTML = nix_representante_br::pegaHtmlTable($atrib_pagina, true);
+	$_HTML = nix_representante_br::pegaHtmlTable($atrib_pagina, false, false);
 	$nome_tabela = nix_representante_br::$nome_tabela;
 
 	$janAtab = new janelaWp("Cadastro - Representante BR");
