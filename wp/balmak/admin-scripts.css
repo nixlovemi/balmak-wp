@@ -1,0 +1,9 @@
+div.nix_fields{
+	margin-top:40px;
+}
+div.nix_fields .handlediv{
+	cursor:pointer !important;
+}
+table.data_tables{
+	margin-top:40px;
+}
